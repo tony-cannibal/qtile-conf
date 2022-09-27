@@ -31,8 +31,13 @@ from libqtile.utils import guess_terminal
 import subprocess
 import os
 
+from colors import solarized_dark as colors
+
+
 mod = "mod4"
-terminal = 'alacritty'
+terminal = 'kitty'
+font_1= 'JetBrains Mono Nerd Font'
+# font_1 = 'terminus'
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -45,16 +50,22 @@ keys = [
     Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "l", lazy.layout.shuffle_left(), desc="Move window to the left"),
-    Key([mod, "shift"], "h", lazy.layout.shuffle_right(), desc="Move window to the right"),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_down(), desc="Move window down"),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_up(), desc="Move window up"),
+    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
+    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
     # Grow windows. If current window is on the edge of screen and direction
     # will be to screen edge - window would shrink.
     Key([mod, "control"], "h", lazy.layout.grow_left(), desc="Grow window to the left"),
     Key([mod, "control"], "l", lazy.layout.grow_right(), desc="Grow window to the right"),
     Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
     Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
+    
+    Key([mod, "control"], "p", lazy.layout.grow(), desc="Grow Main Window"),
+    Key([mod, "control"], "o", lazy.layout.shrink(), desc="Shrink Main Window"),
+
+
+
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
     # Toggle between split and unsplit sides of stack.
     # Split = all windows displayed
@@ -73,11 +84,13 @@ keys = [
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
 
-    Key([mod], "space", lazy.spawn("rofi -modi drun -show drun"), desc="rofi"),
+    Key([mod], "space", lazy.spawn("/home/luis/.config/rofi/scripts/launcher_t4"), desc="rofi"),
     Key([mod], "Right", lazy.screen.next_group(), desc="Next Workspace"),
     Key([mod], "Left", lazy.screen.prev_group(), desc="Previous Workspace"),
     Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle Focused Floating"),
-    Key([mod], "x", lazy.spawn(os.path.expanduser("~/.bin/dmenu-power.sh")), desc="rofi"),
+    Key([mod], "x", 
+        lazy.spawn(os.path.expanduser("~/.config/qtile/scripts/dmenu-power.sh")), 
+        desc="rofi"),
 ]
 
 
@@ -125,27 +138,28 @@ for i in groups:
 window_options = {}
 
 
-colors = {
-    '1':'#002831', 
-    '2':'#475b62',
-    '3':'#d11c24',
-    '4':'#bd3613',
-    '5':'#738a05',
-    '6':'#475b62',
-    '7':'#a57706',
-    '8':'#536870',
-    '9':'#2176c7',
-    '10':'#708284',
-    '11':'#c61c6f',
-    '12':'#5956ba',
-    '13':'#259286',
-    '14':'#819090',
-    '15':'#eae3cb',
-    '16':'#fcf4dc',
-}
+# colors = {
+#     '1':'#002831', 
+#     '2':'#475b62',
+#     '3':'#d11c24',
+#     '4':'#bd3613',
+#     '5':'#738a05',
+#     '6':'#475b62',
+#     '7':'#a57706',
+#     '8':'#536870',
+#     '9':'#2176c7',
+#     '10':'#708284',
+#     '11':'#c61c6f',
+#     '12':'#5956ba',
+#     '13':'#259286',
+#     '14':'#819090',
+#     '15':'#eae3cb',
+#     '16':'#fcf4dc',
+# }
 window_options = {
     'border_width':2,
     'margin':3,
+    'grow_amount':10,
 }
 
 window_options['border_focus'] = colors['13']
@@ -157,7 +171,7 @@ layouts = [
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
+    layout.Bsp(**window_options, fair=False),
     # layout.Matrix(),
     # layout.MonadWide(),
     # layout.RatioTile(),
@@ -167,9 +181,11 @@ layouts = [
     # layout.Zoomy(),
 ]
 
+qtile_dir = '/home/luis/.config/qtile/'
+
 widget_defaults = dict(
-    font="terminus",
-    fontsize=12,
+    font=font_1 ,
+    fontsize=14,
     padding=4,
     foreground=colors['13'],
     background=colors['1'],
@@ -188,29 +204,108 @@ screens = [
                     active=colors['7'], 
                     ##inactive=colors['1'],
                 ),
-                widget.Sep(padding=6),
-                widget.WindowName(),
-                widget.Sep(padding=6),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b0',
+                    fontsize=16,
+                    foreground=colors['1'],
+                    background=colors['9'],
+                    padding=0 
+                    ),
+                widget.CurrentLayout(
+                    background=colors['9'],
+                    foreground=colors['1']
+                    ),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b0',
+                    fontsize=16,
+                    foreground=colors['9'],
+                    background=colors['10'],
+                    padding=0), 
                 widget.GenPollText(
                     update_interval=5,
-                    func=lambda: subprocess.check_output("/home/luis/.bin/hdd-space.sh").decode("utf-8")),
-                widget.Sep(padding=6),
+                    func=lambda: subprocess.check_output("/home/luis/.config/qtile/scripts/hdd-space.sh").decode("utf-8"),
+                    background=colors['10'],
+                    foreground=colors['1']
+                    ),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b0',
+                    fontsize=16,
+                    foreground=colors['10'],
+                    background=colors['1'],
+                    padding=0 
+                    ),
+                widget.WindowName(
+                    background=colors['1'],
+                    foreground=colors['13']
+                    ),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b2',
+                    fontsize=16,
+                    foreground=colors['9'],
+                    background=colors['1'],
+                    padding=0 
+                    ),
                 widget.Volume(
-                    fmt="VOL {}",
+                    background=colors['9'],
+                    foreground=colors['1'],
+                    fmt="\uf028 {}",
                 ),
-                widget.Sep(padding=6),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b2',
+                    fontsize=16,
+                    foreground=colors['5'],
+                    background=colors['9'],
+                    padding=0 
+                    ),
                 widget.Memory(
-                    fmt="RAM{}",
+                    background=colors['5'],
+                    foreground=colors['1'],
+                    fmt="\uf85a{}",
                 ),
-                widget.Sep(padding=6),
-                widget.KeyboardLayout(),
-                widget.Sep(padding=6),
-                widget.Clock(format="%I:%M %p"),
-                widget.Sep(padding=6),
-                widget.Systray(),
-
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b2',
+                    fontsize=16,
+                    foreground=colors['2'],
+                    background=colors['5'],
+                    padding=0 
+                    ),
+                widget.KeyboardLayout(
+                    background=colors['2'],
+                    foreground=colors['15']
+                    ),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b2',
+                    fontsize=16,
+                    foreground=colors['1'],
+                    background=colors['6'],
+                    padding=0 
+                    ),
+                widget.Clock(
+                    fmt='\uf64f {} ', 
+                    format="%I:%M %p",
+                    padding=0
+                    ),
+                widget.TextBox(
+                    font='Iosevka Nerd Font',
+                    text='\ue0b2',
+                    fontsize=16,
+                    foreground=colors['15'],
+                    background=colors['1'],
+                    padding=0 
+                    ),
+                widget.Systray(
+                        background=colors['15'],
+                        foreground=colors['1']
+                        ),
             ],
-            18,
+            20,
             border_width=[0, 0, 1, 0],  # Draw top and bottom borders
             border_color=["000000", "000000", "259286", "000000"]  # Borders are magenta
         ),
@@ -263,15 +358,6 @@ wl_input_rules = None
 # java that happens to be on java's whitelist.
 wmname = "LG3D"
 
-startup = [
-    'xset s off -dpms',
-    'setxkbmap -option caps:swapescape',
-    'numlockx &',
-    'udiskie &',
-    'lxpolkit &',
-    'feh --bg-fill ~/Pictures/wallpapers/Solarized/sentre.jpg',
-]
 
 
-for i in startup:
-   os.system(i)
+os.system('/home/luis/.config/qtile/scripts/autostart.sh')
