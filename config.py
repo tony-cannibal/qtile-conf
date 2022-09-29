@@ -30,14 +30,13 @@ from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 import subprocess
 import os
-
 from colors import solarized_dark as colors
 
 
 mod = "mod4"
 terminal = 'kitty'
+
 font_1= 'JetBrains Mono Nerd Font'
-# font_1 = 'terminus'
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -85,8 +84,8 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
 
     Key([mod], "space", lazy.spawn("/home/luis/.config/rofi/scripts/launcher_t4"), desc="rofi"),
-    Key([mod], "Right", lazy.screen.next_group(), desc="Next Workspace"),
-    Key([mod], "Left", lazy.screen.prev_group(), desc="Previous Workspace"),
+    Key([mod], ".", lazy.screen.next_group(), desc="Next Workspace"),
+    Key([mod], ",", lazy.screen.prev_group(), desc="Previous Workspace"),
     Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle Focused Floating"),
     Key([mod], "x", 
         lazy.spawn(os.path.expanduser("~/.config/qtile/scripts/dmenu-power.sh")), 
@@ -98,7 +97,7 @@ keys = [
 __groups = {
     1: Group("1"),
     2: Group("2", matches=[Match(wm_class=["firefox"])]),
-    3: Group("3", matches=[Match(wm_class=["thunar"])]),
+    3: Group("3", matches=[Match(wm_class=["thunar", "pcmanfm"])]),
     4: Group("4", matches=[Match(wm_class=["deluge"])]),
     5: Group("5"),
     6: Group("6"),
@@ -138,24 +137,6 @@ for i in groups:
 window_options = {}
 
 
-# colors = {
-#     '1':'#002831', 
-#     '2':'#475b62',
-#     '3':'#d11c24',
-#     '4':'#bd3613',
-#     '5':'#738a05',
-#     '6':'#475b62',
-#     '7':'#a57706',
-#     '8':'#536870',
-#     '9':'#2176c7',
-#     '10':'#708284',
-#     '11':'#c61c6f',
-#     '12':'#5956ba',
-#     '13':'#259286',
-#     '14':'#819090',
-#     '15':'#eae3cb',
-#     '16':'#fcf4dc',
-# }
 window_options = {
     'border_width':2,
     'margin':3,
@@ -288,20 +269,20 @@ screens = [
                     padding=0 
                     ),
                 widget.Clock(
-                    fmt='\uf64f {} ', 
+                    fmt=' \uf64f {} ', 
                     format="%I:%M %p",
                     padding=0
                     ),
-                widget.TextBox(
-                    font='Iosevka Nerd Font',
-                    text='\ue0b2',
-                    fontsize=16,
-                    foreground=colors['15'],
-                    background=colors['1'],
-                    padding=0 
-                    ),
+                # widget.TextBox(
+                #     font='Iosevka Nerd Font',
+                #     text='\ue0b2',
+                #     fontsize=16,
+                #     foreground=colors['1'],
+                #     background=colors['1'],
+                #     padding=0 
+                #     ),
                 widget.Systray(
-                        background=colors['15'],
+                        background=colors['1'],
                         foreground=colors['1']
                         ),
             ],

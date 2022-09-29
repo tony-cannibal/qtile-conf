@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-killall -9 numlockx udiskie lxpolkit
+killall -9 numlockx udiskie lxpolkit picom
 
 xset s off -dpms
 
@@ -13,3 +13,5 @@ udiskie &
 lxpolkit &
 
 feh --bg-fill ~/Pictures/Wallpapers/Solarized/sentre.jpg &
+
+picom --config ~/.config/qtile/picom/picom.conf &
